@@ -1,0 +1,193 @@
+Total: 63 samples
+      59  93.7%  93.7%       59  93.7% lock
+       2   3.2%  96.8%        2   3.2% __strcmp_sse42
+       1   1.6%  98.4%        1   1.6% 0x00007ffdd1596958
+       1   1.6% 100.0%       63 100.0% thread_operations
+       0   0.0% 100.0%        2   3.2% SortedList_lookup
+       0   0.0% 100.0%        1   1.6% __GI___clock_gettime
+       0   0.0% 100.0%       63 100.0% __clone
+       0   0.0% 100.0%       63 100.0% start_thread
+ROUTINE ====================== thread_operations in /u/ch/ugrad/jingjing/Proj2/Proj2b/lab2_list.c
+     1     63 Total samples (flat / cumulative)
+     .      .   84:     else if (opt_sync != NULL && *opt_sync == 's')
+     .      .   85:         __sync_lock_release(&spin[i]);
+     .      .   86: }
+     .      .   87: 
+     .      .   88: void* thread_operations(void * arg)
+---
+     .      .   89: {
+     .      .   90:     int thread_id = *(int *)arg;
+     .      .   91:     
+     .      .   92:     int i;
+     .      .   93:     for (i = thread_id; i < num_element; i+= num_thread)
+     .      .   94:     {
+     .      .   95:         int hash_list = thread_id % num_list;
+     .      .   96:         
+     .      .   97:         struct timespec begin, end;
+     .      .   98:         if (clock_gettime(CLOCK_REALTIME, &begin) == -1)
+     .      .   99:             Error("getting the time");
+     .      .  100:         
+     .     39  101:         lock(hash_list);
+     .      .  102:         
+     .      .  103:         if (clock_gettime(CLOCK_REALTIME, &end) == -1)
+     .      .  104:             Error("getting the time");
+     .      .  105:         
+     1      1  106:         time_lock[thread_id] += BILLION * (end.tv_sec - begin.tv_sec) + end.tv_nsec - begin.tv_nsec;
+     .      .  107:         
+     .      .  108:         SortedList_insert(header[hash_list], (SortedListElement_t *) (element[i]));
+     .      .  109:         
+     .      .  110:         unlock(hash_list);
+     .      .  111:     }
+     .      .  112:     
+     .      .  113:     long length = 0;
+     .      .  114:     long length_tot = 0;
+     .      .  115:     for (i = 0; i < num_list; i++)
+     .      .  116:     {
+     .      .  117:         struct timespec begin, end;
+     .      .  118:         if (clock_gettime(CLOCK_REALTIME, &begin) == -1)
+     .      .  119:             Error("getting the time");
+     .      .  120:         
+     .      .  121:         lock(i);
+     .      .  122:         
+     .      .  123:         if (clock_gettime(CLOCK_REALTIME, &end) == -1)
+     .      .  124:             Error("getting the time");
+     .      .  125:         
+     .      .  126:         time_lock[thread_id] += BILLION * (end.tv_sec - begin.tv_sec) + end.tv_nsec - begin.tv_nsec;
+     .      .  127:         
+     .      .  128:         length = SortedList_length(header[i]);
+     .      .  129:         
+     .      .  130:         if (length == -1)
+     .      .  131:             Error("inserting elements to the list");
+     .      .  132:         
+     .      .  133:         unlock(i);
+     .      .  134:         
+     .      .  135:         length_tot += length;
+     .      .  136:     }
+     .      .  137:     
+     .      .  138:     
+     .      .  139:     for (i = thread_id; i < num_element; i+= num_thread)
+     .      .  140:     {
+     .      .  141:         int hash_list = thread_id % num_list;
+     .      .  142:         
+     .      .  143:         struct timespec begin, end;
+     .      1  144:         if (clock_gettime(CLOCK_REALTIME, &begin) == -1)
+     .      .  145:             Error("getting the time");
+     .      .  146:         
+     .     20  147:         lock(hash_list);
+     .      .  148:         
+     .      .  149:         if (clock_gettime(CLOCK_REALTIME, &end) == -1)
+     .      .  150:             Error("getting the time");
+     .      .  151:         
+     .      .  152:         time_lock[thread_id] += BILLION * (end.tv_sec - begin.tv_sec) + end.tv_nsec - begin.tv_nsec;
+     .      .  153:         
+     .      2  154:         SortedListElement_t * element_found = SortedList_lookup(header[hash_list], element[i]->key);
+     .      .  155:         if (element_found == NULL)
+     .      .  156:             Error("looking up the element in the list");
+     .      .  157:         
+     .      .  158:         stat = SortedList_delete(element_found);
+     .      .  159:         if (stat != 0)
+     .      .  160:             Error("deleting the element from the list");
+     .      .  161:         
+     .      .  162:         unlock(hash_list);
+     .      .  163:     }
+     .      .  164:     
+     .      .  165:     return NULL;
+     .      .  166: }
+---
+     .      .  167: 
+     .      .  168: void print_results(char *testName, long num_thread, long num_iteration, long runTime, long time_lock_tot)
+     .      .  169: {
+     .      .  170:     long operNum = 3*num_thread*num_iteration;
+     .      .  171:     long runTime_avg = runTime/operNum;
+ROUTINE ====================== thread_operations in /u/ch/ugrad/jingjing/Proj2/Proj2b/lab2_list.c
+     1     63 Total samples (flat / cumulative)
+     .      .   84:     else if (opt_sync != NULL && *opt_sync == 's')
+     .      .   85:         __sync_lock_release(&spin[i]);
+     .      .   86: }
+     .      .   87: 
+     .      .   88: void* thread_operations(void * arg)
+---
+     .      .   89: {
+     .      .   90:     int thread_id = *(int *)arg;
+     .      .   91:     
+     .      .   92:     int i;
+     .      .   93:     for (i = thread_id; i < num_element; i+= num_thread)
+     .      .   94:     {
+     .      .   95:         int hash_list = thread_id % num_list;
+     .      .   96:         
+     .      .   97:         struct timespec begin, end;
+     .      .   98:         if (clock_gettime(CLOCK_REALTIME, &begin) == -1)
+     .      .   99:             Error("getting the time");
+     .      .  100:         
+     .     39  101:         lock(hash_list);
+     .      .  102:         
+     .      .  103:         if (clock_gettime(CLOCK_REALTIME, &end) == -1)
+     .      .  104:             Error("getting the time");
+     .      .  105:         
+     1      1  106:         time_lock[thread_id] += BILLION * (end.tv_sec - begin.tv_sec) + end.tv_nsec - begin.tv_nsec;
+     .      .  107:         
+     .      .  108:         SortedList_insert(header[hash_list], (SortedListElement_t *) (element[i]));
+     .      .  109:         
+     .      .  110:         unlock(hash_list);
+     .      .  111:     }
+     .      .  112:     
+     .      .  113:     long length = 0;
+     .      .  114:     long length_tot = 0;
+     .      .  115:     for (i = 0; i < num_list; i++)
+     .      .  116:     {
+     .      .  117:         struct timespec begin, end;
+     .      .  118:         if (clock_gettime(CLOCK_REALTIME, &begin) == -1)
+     .      .  119:             Error("getting the time");
+     .      .  120:         
+     .      .  121:         lock(i);
+     .      .  122:         
+     .      .  123:         if (clock_gettime(CLOCK_REALTIME, &end) == -1)
+     .      .  124:             Error("getting the time");
+     .      .  125:         
+     .      .  126:         time_lock[thread_id] += BILLION * (end.tv_sec - begin.tv_sec) + end.tv_nsec - begin.tv_nsec;
+     .      .  127:         
+     .      .  128:         length = SortedList_length(header[i]);
+     .      .  129:         
+     .      .  130:         if (length == -1)
+     .      .  131:             Error("inserting elements to the list");
+     .      .  132:         
+     .      .  133:         unlock(i);
+     .      .  134:         
+     .      .  135:         length_tot += length;
+     .      .  136:     }
+     .      .  137:     
+     .      .  138:     
+     .      .  139:     for (i = thread_id; i < num_element; i+= num_thread)
+     .      .  140:     {
+     .      .  141:         int hash_list = thread_id % num_list;
+     .      .  142:         
+     .      .  143:         struct timespec begin, end;
+     .      1  144:         if (clock_gettime(CLOCK_REALTIME, &begin) == -1)
+     .      .  145:             Error("getting the time");
+     .      .  146:         
+     .     20  147:         lock(hash_list);
+     .      .  148:         
+     .      .  149:         if (clock_gettime(CLOCK_REALTIME, &end) == -1)
+     .      .  150:             Error("getting the time");
+     .      .  151:         
+     .      .  152:         time_lock[thread_id] += BILLION * (end.tv_sec - begin.tv_sec) + end.tv_nsec - begin.tv_nsec;
+     .      .  153:         
+     .      2  154:         SortedListElement_t * element_found = SortedList_lookup(header[hash_list], element[i]->key);
+     .      .  155:         if (element_found == NULL)
+     .      .  156:             Error("looking up the element in the list");
+     .      .  157:         
+     .      .  158:         stat = SortedList_delete(element_found);
+     .      .  159:         if (stat != 0)
+     .      .  160:             Error("deleting the element from the list");
+     .      .  161:         
+     .      .  162:         unlock(hash_list);
+     .      .  163:     }
+     .      .  164:     
+     .      .  165:     return NULL;
+     .      .  166: }
+---
+     .      .  167: 
+     .      .  168: void print_results(char *testName, long num_thread, long num_iteration, long runTime, long time_lock_tot)
+     .      .  169: {
+     .      .  170:     long operNum = 3*num_thread*num_iteration;
+     .      .  171:     long runTime_avg = runTime/operNum;

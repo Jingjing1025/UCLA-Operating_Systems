@@ -1,0 +1,20 @@
+Project 4A: Beaglebone Bring-Up
+
+NAME: Jingjing 
+EMAIL: 
+ID: 
+
+Beaglebone Information
+======================
+S/N: BBGW16062679
+MAC: 2CF7F106536E
+
+Included Files
+==============
+my_beaglebone.jpg: the selfie of me holding my assembled Beaglebone.
+connected.png: the screen shot from a USB terminal command session connected to my system.
+copy.png: the screen shot from a local session in which I copy a hello world program from my laptop/desktop to the Beaglebone.
+build_run.png: the screen shot from a WIFI SSH session in which I build and run a trivial (hello world) program.
+git.png: the screen shot from a WIFI SSH session in which I install git and clone a repository.
+Makefile: the file to build the tarball.
+README: The file that describes the details about the included files

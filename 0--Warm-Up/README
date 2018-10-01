@@ -1,0 +1,60 @@
+Project 0: Warm-Up
+
+NAME: Jingjing
+EMAIL: 
+ID: 
+
+Included Files
+==============
+lab0.c: 
+The C program that can be used to copy its standard input to its standard
+output. It accepts four optional arguments: 
+--input=filename
+	which uses the file as the standard input
+--output=filename
+	which uses the file as the standard output
+--segfault
+	which forces the segmentation fault with no copying step
+--catch
+	which catches the segmentation fault using signal and logs an error message
+
+Makefile:
+The file that can be used to build the progrma and the tarball. It supports the
+following four targets:
+default: compile and build the C program
+check: use smoke-tests to test the specific features of the program
+clean: remove all the files that are created by the Makefile, and return the 
+directory to its freshly untared state
+dist: build the distribution tarball
+
+backtrace.png:
+The screenshot that shows a segfault and associated stack-trace
+
+breakpoint.png:
+The screenshot that shows a breakpoint and variable inspection
+
+
+Smoke-test Cases
+================
+check_success
+	checks if the program will exit with code 0 under successful cases
+check_segfault
+	checks if the program will exit with code 4 if there are segmentation faults caught
+check_input
+	checks if the program will exit with code 2 if the input file is failed to be opened
+check_output
+	checks if the program will exit with code 3 if the output file is failed to be created
+check_argument
+	checks if the program will exit with code 1 if the arguments are invalid
+
+Other Information
+=================
+Researches
+File Descriptors: file:///Users/jingjing/Downloads/fd_juggling.html 
+strerror: http://www.cplusplus.com/reference/cstring/strerror/
+getopt: http://man7.org/linux/man-pages/man3/getopt.3.html
+signal: http://man7.org/linux/man-pages/man2/signal.2.html
+Makefile: https://www.gnu.org/software/make/manual/make.html
+
+
+

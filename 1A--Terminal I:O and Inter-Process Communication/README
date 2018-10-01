@@ -1,0 +1,31 @@
+Project 1A: Terminal I/O and Inter-Process Communication
+
+NAME: Jingjing 
+EMAIL: 
+ID: 
+
+Included Files
+==============
+lab1a.c: 
+The C program that is used for character-at-a-time, full duplex terminal I/O,
+and polled I/O with passing input and output between two processes.
+
+Makefile:
+The file that can be used to build the progrma and the tarball. It supports the
+following four targets:
+default: compile and build the C program
+clean: remove all the files that are created by the Makefile
+dist: build the distribution tarball
+
+README:
+The file that describes the details about the included files
+
+Research
+========
+fork: http://man7.org/linux/man-pages/man2/fork.2.html
+atexit: http://man7.org/linux/man-pages/man3/atexit.3.html
+termios: http://man7.org/linux/man-pages/man3/termios.3.html
+pipe: http://pubs.opengroup.org/onlinepubs/009695399/functions/pipe.html
+poll: http://pubs.opengroup.org/onlinepubs/009695399/functions/poll.html
+stty: http://pubs.opengroup.org/onlinepubs/9699919799/utilities/stty.html
+ascii table: https://www.asciitable.com/

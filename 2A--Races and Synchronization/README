@@ -1,0 +1,145 @@
+Project 2A: Races and Synchronization
+
+NAME: Jingjing 
+EMAIL: 
+ID: 
+
+
+Included Files
+==============
+lab2_add.c
+	The C program that implements and tests a shared variable add function, 
+	implements the specified command line options, and produces the specified 
+	output statistics.
+
+SortedList.h 
+	The header file describing the interfaces for linked list operations.
+
+SortedList.c 
+	The C module that implements insert, delete, lookup, and length methods 
+	for a sorted doubly linked list (described in the provided header file, 
+	including correct placement of yield calls).
+
+lab2_list.c 
+	The C program that implements the specified command line options and produces 
+	the specified output statistics.
+
+lab2_add.csv
+	The file that containes all of the results for all of the Part-1 tests.
+
+lab2_list.csv 
+	The file that containes all of the results for all of the Part-2 tests.
+
+graphs 
+	The .png files that are created by running gnuplot(1) on the above .csv files 
+	with the supplied data reduction scripts.
+	
+	For part 1 (lab2_add):
+	lab2_add-1.png 
+		threads and iterations required to generate a failure (with and without yields)
+	lab2_add-2.png 
+		average time per operation with and without yields.
+	lab2_add-3.png 
+		average time per (single threaded) operation vs. the number of iterations.
+	lab2_add-4.png 
+		threads and iterations that can run successfully with yields under each of the 
+		synchronization options.
+	lab2_add-5.png 
+		average time per (protected) operation vs. the number of threads.
+	
+	For part 2 (lab2_list):
+	lab2_list-1.png 
+		average time per (single threaded) unprotected operation vs. number of iterations 
+		(illustrating the correction of the per-operation cost for the list length).
+	lab2_list-2.png 
+		threads and iterations required to generate a failure (with and without yields).
+	lab2_list-3.png 
+		iterations that can run (protected) without failure.
+	lab2_list-4.png 
+		(length-adjusted) cost per operation vs the number of threads for the various 
+		synchronization options.
+
+Makefile
+	The file to build the deliverable programs (lab2_add and lab2_list), output, 
+	graphs, and tarball.
+	build 
+		(default target) compile all programs (with the -Wall and -Wextra options).
+	tests 
+		run all (over 200) specified test cases to generate results in CSV files.
+	graphs 
+		use gnuplot(1) and the supplied data reduction scripts to generate the required graphs
+	dist 
+		create the deliverable tarball.
+	clean 
+		delete all programs and output created by the Makefile.
+
+README
+	The file that contains: the descriptions of each of the included files and any 
+	other related information (e.g. research, limitations, features, testing methodology).
+	It also contains brief (1-4 sentences per question) answers to each of the questions.
+
+
+Research
+========
+Srand: http://www.cplusplus.com/reference/cstdlib/srand/
+Pthread_create: http://man7.org/linux/man-pages/man3/pthread_create.3.html
+Clock_gettime: https://www.cs.rutgers.edu/~pxk/416/notes/c-tutorials/gettime.html
+Mutex: https://www.cs.cmu.edu/afs/cs/academic/class/15492-f07/www/pthreads.html
+
+
+Questions
+=========
+QUESTION 2.1.1 - causing conflicts:
+	If only a small number of iterations are present, each thread can quickly
+	finish its adding operations, and it is very unlikely that race conditions
+	will occur. On the other hand, if there are too many iterations, then the 
+	time spent for each thread will be extended, and more than one theads may
+	operate the operations at the same time, which will then cause race condition
+	errors. So it take many iterations before errors are seen, and a significantly
+	smaller number of iterations is very unlikely to fail. 
+
+QUESTION 2.1.2 - cost of yielding:
+	--yield runs much slower because yield, when called in the process, will lead 
+	to traps, and then switch to the kernel mode from the user mode. These mode 
+	sqitches and traps will impact the running time. So the additional time is
+	spent on those context switches. It is impossible to get valid per-operation 
+	timings through the use of the --yield option, which can also be explained by 
+	the context switches.
+
+QUESTION 2.1.3 - measurement errors:
+	The reason why the average cost per operation drop with increasing iterations 
+	is that as the cost mainly consists of the part from thread creations and the 
+	part from thread operations. Then, since thread operations only take up the 
+	less signifiant portion, and is distributed among each operation, the cost per 
+	operation will drop when iteration number increases. Since the cost will eventually 
+	be stablized, we can run the tests for an increasing number of iterations to 
+	see how many iterations to run, or wht the "correct" cost is.
+
+QUESTION 2.1.4 - costs of serialization:
+	For low numbers of threads, the waiting time caused by lock for the threads is 
+	also lower, so the costs of serialization are similar for all of the options. 
+	As the number of threads rises, the protected operations, with lock, will lead 
+	to increased waiting time as more threads will need to wait for the operating 
+	thread to finish working on the critical section. Thus, as the number of threads 
+	increases, the protected operations slow down.
+
+QUESTION 2.2.1 - scalability of Mutex
+	In Part-1 (adds), the time per mutex-protected operation increases with the 
+	increasing number of threads. In part-2(sorted lists), there is also an 
+	increasing trend between the time per mutex-protected operation and the number of 
+	threads. However,compared with the trends in Part-1, the trends in Part-2 are not 
+	as significant. The plots suggest that both parts follow an increasing trend. 
+	Compared with the shape of the curve of Part-1, the curve in Part-2 has a steeper 
+	shape and greater increasing rates. The reason is that for sorted lists, more codes
+	are required to be included in the critical sections, so the waiting time for 
+	locking is greater.
+
+QUESTION 2.2.2 - scalability of spin locks
+	For a small number of threads, both the Mutex locks and Spin locks have similar 
+	time per protected operation. Then, as the number increases, both the two locks 
+	will have increasing time and cost. However, the increasing rate for the Spin 
+	locks will be much greater than that for the Mutex locks. It can be explained by 
+	the higher overhead of Spin locks, which gets worse with more waiting threads. 
+	Both curves have an increasing shape, but the one for Spin locks is increasing 
+	at a faster rate. It can be explained by the greater wastes caused by Spin locks 
+	as CPU cycles during the process.
